@@ -12,15 +12,22 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Load index + metadata
+# Load or build index + metadata
+if not os.path.exists("bitninja_index.faiss"):
+    print("bitninja_index.faiss not found. Rebuilding index...")
+    from build_index import main as build_index_main
+    build_index_main()
+
 try:
     index = faiss.read_index("bitninja_index.faiss")
     with open("bitninja_metadata.json", "r") as f:
         metadata = json.load(f)
     print("Vector store loaded successfully!")
-except FileNotFoundError:
-    print("Vector store not found. Run build_vector_store.py first!")
+except Exception as e:
+    print(f"Error loading FAISS index or metadata: {str(e)}")
     index = None
     metadata = []
+
 
 def search_docs(query, k=3):
     """Search for relevant documents using OpenAI embeddings"""
