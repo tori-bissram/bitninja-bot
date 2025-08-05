@@ -1,9 +1,13 @@
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from dotenv import load_dotenv
-import os
 import re
 from query_bot import answer_query
+import os
+if not os.path.exists("bitninja_index.faiss"):
+    from build_index import main as build_index_main
+    build_index_main()
+
 
 # Load environment variables
 load_dotenv()
